@@ -20,4 +20,4 @@ under the License.
 from .parser import SessionValidator, Session, Transaction, Request, Response
 from .ipconstants import isIPv6, isIPv4, getIP
 
-__version__ = "1.0.0"
+__version__ = "1.0.1"
