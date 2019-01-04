@@ -49,6 +49,9 @@ class Request(object):
     def getBody(self):
         return self._body
 
+    def getOptions(self):
+        return self._options
+
     def getHeaderMD5(self):
         ''' Returns the MD5 hash of the headers
 
@@ -97,6 +100,9 @@ class Request(object):
         if self._scheme:
             retJson['scheme'] = self._scheme
 
+        if self._options:
+            retJson['options'] = self._options
+
         if self._contentSize or self._body:
             retJson['content'] = dict()
 
@@ -118,7 +124,7 @@ class Request(object):
 
         return retJson
 
-    def __init__(self, scheme, version, url, method, encoding, contentSize, data, headers):
+    def __init__(self, scheme, version, url, method, encoding, contentSize, data, headers, options):
         self._scheme = scheme
         self._method = method
         self._encoding = encoding
@@ -127,6 +133,7 @@ class Request(object):
         self._version = version
         self._url = url
         self._body = data
+        self._options = options
 
     @classmethod
     def fromJSON(cls, data, metaName):
@@ -138,6 +145,7 @@ class Request(object):
             _scheme = getOptional(data, 'scheme')
             _method = getRequired(data, 'method')
             _url = getRequired(data, 'url')
+            _options = getOptional(data, 'options')
 
             # if _scheme != 'GET':
             #     raise KeyError('nah')
@@ -159,11 +167,11 @@ class Request(object):
             print("Error in parsing {0} request".format(metaName))
             raise e
 
-        return cls(_scheme, _httpVersion, _url, _method, _encoding, _size, _data, _headers)
+        return cls(_scheme, _httpVersion, _url, _method, _encoding, _size, _data, _headers, _options)
 
     # mostly adapted from Apache Traffic Server's tests' simple request lines
     @classmethod
-    def fromRequestLine(cls, requestLine, body):
+    def fromRequestLine(cls, requestLine, body, options=None):
         req, headers = requestLine.split("\r\n", 1)
 
         # reassign since we don't need the original anymore
@@ -176,4 +184,4 @@ class Request(object):
         if body:
             contentSize = len(body)
 
-        return cls(None, None, path, method, None, contentSize, body, headers)
+        return cls(None, None, path, method, None, contentSize, body, headers, options)

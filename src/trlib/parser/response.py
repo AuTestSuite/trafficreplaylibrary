@@ -41,6 +41,9 @@ class Response(object):
     def getBody(self):
         return self._body
 
+    def getOptions(self):
+        return self._options
+
     def __repr__(self):
         retstr = '<Response: '
 
@@ -73,6 +76,9 @@ class Response(object):
         if self._reason:
             retJson['reason'] = self._reason
 
+        if self._options:
+            retJson['options'] = self._options
+
         if self._contentSize or self._body:
             retJson['content'] = dict()
 
@@ -94,13 +100,14 @@ class Response(object):
 
         return retJson
 
-    def __init__(self, status, reason, encoding, contentSize, data, headers):
+    def __init__(self, status, reason, encoding, contentSize, data, headers, options):
         self._status = status
         self._reason = reason
         self._encoding = encoding
         self._contentSize = contentSize
         self._headers = headers
         self._body = data
+        self._options = options
 
     @classmethod
     def fromJSON(cls, data, metaName):
@@ -111,6 +118,7 @@ class Response(object):
             _status = getRequired(data, 'status')
             _reason = getOptional(data, 'reason')
             _encoding = getOptional(data, 'encoding')
+            _options = getOptional(data, 'options')
 
             content = getOptional(data, 'content')
             _encoding = getOptional(content, 'encoding')  # NOTE NOT USED
@@ -131,11 +139,11 @@ class Response(object):
                 metaName, e))
             raise e
 
-        return cls(_status, _reason, _encoding, _size, _data, _headers)
+        return cls(_status, _reason, _encoding, _size, _data, _headers, _options)
 
     # mostly adapted from Apache Traffic Server's tests' simple request lines
     @classmethod
-    def fromRequestLine(cls, requestLine, body):
+    def fromRequestLine(cls, requestLine, body, options):
         res, headers = requestLine.split("\r\n", 1)
 
         # reassign since we don't need the original anymore
@@ -148,4 +156,4 @@ class Response(object):
         if body:
             contentSize = len(body)
 
-        return cls(status, reason, None, contentSize, body, headers)
+        return cls(status, reason, None, contentSize, body, headers, options)
