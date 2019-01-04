@@ -1,0 +1,3 @@
+v1.0.0  Dec. 3, 2018 -- Initial release
+
+v1.0.1  Jan. 4, 2019 -- Added replay format and added options field to requests and responses
