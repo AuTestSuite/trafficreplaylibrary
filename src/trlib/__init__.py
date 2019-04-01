@@ -17,7 +17,11 @@ specific language governing permissions and limitations
 under the License.
 '''
 
-from .parser import SessionValidator, Session, Transaction, Request, Response
-from .ipconstants import isIPv6, isIPv4, getIP
+#from .parser import SessionValidator, Session, Transaction, Request, Response
+#from .ipconstants import isIPv6, isIPv4, getIP
 
-__version__ = "1.0.1"
+__version__ = "1.1.0"
+
+
+from .loader import loads, load_json
+

@@ -19,37 +19,101 @@ under the License.
 
 import hashlib
 
-from .svUtils import *
+from deprecated import deprecated
+
+from trlib.parser.attribute import Attribute
+from typing import Optional
+from .content import Content
+from .header import Header
+
+#from .svUtils import *
 
 
 class Request(object):
     ''' Request encapsulates a single request from the UA '''
+    attributes = [
+        # validate that it is 1.0, 1.1, 2.0
+        Attribute("version", str, default="1.1"),
+        Attribute("method", str, required=True),  # Get, Post, etc...
+        Attribute("url", str, required=True),  # validate as url
+        # http or https .. should be move to transaction level
+        Attribute("scheme", str,),
+        Attribute("content", Content),
+        Attribute("headers", Header),
+        Attribute("options", dict),
+    ]
 
+    def __init__(self, version: str, url: str, method: str, scheme: Optional[str] = None, content: Optional[Content] = None, headers: Optional[Header] = None, options={}):
+        self._scheme = scheme
+        self._method = method
+        self._headers = headers
+        self._version = version
+        self._url = url
+        self._body = content
+        self._options = options
+
+    @deprecated(reason="Use header property instead")
     def getHeaders(self):
         return self._headers
 
+    @deprecated(reason="Use schema property instead")
     def getScheme(self):
         return self._scheme
 
+    @deprecated(reason="Use version property instead")
     def getVersion(self):
         return self._version
 
+    @deprecated(reason="Use method property instead")
     def getMethod(self):
         return self._method
 
+    @deprecated(reason="Use len(obj.body) property instead")
     def getContentSize(self):
-        return self._contentSize
+        return len(self.body)
 
+    @deprecated(reason="Use encoding property of header or content instead")
     def getEncoding(self):
-        return self._encoding
+        return self._body.encoding
 
+    @deprecated(reason="Use url property instead")
     def getURL(self):
         return self._url
 
+    @deprecated(reason="Use body property instead")
     def getBody(self):
         return self._body
 
+    @deprecated(reason="Use options property instead")
     def getOptions(self):
+        return self._options
+
+    @property
+    def headers(self):
+        return self._headers
+
+    @property
+    def scheme(self):
+        return self._scheme
+
+    @property
+    def version(self):
+        return self._version
+
+    @property
+    def method(self):
+        return self._method
+
+    @property
+    def url(self):
+        return self._url
+
+    @property
+    def body(self):
+        return self._body
+
+    @property
+    def options(self):
         return self._options
 
     def getHeaderMD5(self):
@@ -58,7 +122,7 @@ class Request(object):
         This is used to do a unique mapping to a request/response transaction '''
         return hashlib.md5(self._headers.encode()).hexdigest()
 
-    def validate(self):
+    '''def validate(self):
         retval = True
 
         # skipping scheme
@@ -76,7 +140,7 @@ class Request(object):
             verbose_print("Request does not have valid headers.")
         # NOTE: what to do with content
 
-        return retval
+        return retval'''
 
     def __repr__(self):
         retstr = '<Request: '
@@ -87,87 +151,6 @@ class Request(object):
         retstr += '>\n'
 
         return retstr
-
-    def toJSON(self):
-        retJson = dict()
-
-        retJson['method'] = self._method
-        retJson['url'] = self._url
-
-        if self._version:
-            retJson['version'] = self._version
-
-        if self._scheme:
-            retJson['scheme'] = self._scheme
-
-        if self._options:
-            retJson['options'] = self._options
-
-        if self._contentSize or self._body:
-            retJson['content'] = dict()
-
-            if self._body:
-                retJson['content']['data'] = self._body
-
-            if self._contentSize:
-                retJson['content']['size'] = self._contentSize
-
-            if self._encoding:
-                retJson['content']['encoding'] = self._encoding
-
-        if self._headers:
-            retJson['headers'] = dict()
-            retJson['headers']['fields'] = list()
-
-            for hdr in self._headers:
-                retJson['headers']['fields'].append([hdr, self._headers[hdr]])
-
-        return retJson
-
-    def __init__(self, scheme, version, url, method, encoding, contentSize, data, headers, options):
-        self._scheme = scheme
-        self._method = method
-        self._encoding = encoding
-        self._contentSize = contentSize
-        self._headers = headers
-        self._version = version
-        self._url = url
-        self._body = data
-        self._options = options
-
-    @classmethod
-    def fromJSON(cls, data, metaName):
-        if not data:
-            return None
-
-        try:
-            _httpVersion = getOptional(data, 'version')
-            _scheme = getOptional(data, 'scheme')
-            _method = getRequired(data, 'method')
-            _url = getRequired(data, 'url')
-            _options = getOptional(data, 'options')
-
-            # if _scheme != 'GET':
-            #     raise KeyError('nah')
-
-            content = getOptional(data, 'content')
-            _encoding = getOptional(content, 'encoding')  # NOTE NOT USED
-            _size = getOptional(content, 'size')
-            _data = getOptional(content, 'data')
-
-            headers = getOptional(data, 'headers')
-            header_encoding = getOptional(headers, 'encoding')  # NOTE NOT USED
-            # NOTE can and will break sometime because headers is optional
-            _headers = generateHeadersFromTxnFields(
-                getOptional(headers, 'fields'))
-
-            # if _size and ('Content-Length' not in _headers or 'content-length' not in _headers):
-            # _headers.update({'Content-Length': _size})  # NOTE temporary solution
-        except Exception as e:
-            print("Error in parsing {0} request".format(metaName))
-            raise e
-
-        return cls(_scheme, _httpVersion, _url, _method, _encoding, _size, _data, _headers, _options)
 
     # mostly adapted from Apache Traffic Server's tests' simple request lines
     @classmethod

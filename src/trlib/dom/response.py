@@ -16,32 +16,81 @@ KIND, either express or implied.  See the License for the
 specific language governing permissions and limitations
 under the License.
 '''
+from typing import Optional
 
-from .svUtils import *
+from deprecated import deprecated
+
+from trlib.parser.attribute import Attribute
+
+#from .svUtils import *
+from .content import Content
+from .header import Header
 
 
 class Response(object):
     ''' Response encapsulates a single response from the UA '''
+    attributes = [
+        Attribute("status", int, required=True),
+        # http or https .. should be move to transaction level
+        Attribute("reason", str,),
+        Attribute("content", Content),
+        Attribute("headers", Header),
+        Attribute("options", dict),
+    ]
 
+    def __init__(self, status: int, reason: Optional[str] = None, encoding: Optional[str] = None, content: Optional[Content] = None, headers: Optional[Header] = None, options={}):
+        self._status: int = status
+        self._reason: Optional[str] = reason
+        self._encoding: Optional[str] = encoding
+        self._content: Content = content
+        self._header: Header = headers
+        self._options = options
+
+    @deprecated(reason="Use headers property instead")
     def getHeaders(self):
-        return self._headers
+        return self._header
 
+    @deprecated(reason="Use status property instead")
     def getStatus(self):
         return self._status
 
+    @deprecated(reason="Use reason property instead")
     def getReason(self):
         return self._reason
 
+    @deprecated(reason="Use len(obj.body) property instead")
     def getContentSize(self):
-        return self._contentSize
+        return len(self._content)
 
+    @deprecated(reason="Use encoding property instead")
     def getEncoding(self):
         return self._encoding
 
+    @deprecated(reason="Use body property instead")
     def getBody(self):
-        return self._body
+        return self._content.content
 
+    @deprecated(reason="Use options property instead")
     def getOptions(self):
+        return self._options
+    ###
+
+    def headers(self) -> Header:
+        return self._header
+
+    def status(self) -> int:
+        return self._status
+
+    def reason(self) -> Optional[str]:
+        return self._reason
+
+    def encoding(self) -> Optional[str]:
+        return self._encoding
+
+    def body(self) -> Content:
+        return self._content
+
+    def options(self):
         return self._options
 
     def __repr__(self):
@@ -54,7 +103,9 @@ class Response(object):
 
         return retstr
 
-    def validate(self):
+    # def validateValues(self,stat:int=None,content:str= None, content_length:int= None,headers:Optional[Dict[str,str]]=None,reason:Optional[str]= None):
+
+    def validateFormat(self):
         retval = True
 
         # skipping reason
@@ -99,47 +150,6 @@ class Response(object):
                 retJson['headers']['fields'].append([hdr, self._headers[hdr]])
 
         return retJson
-
-    def __init__(self, status, reason, encoding, contentSize, data, headers, options):
-        self._status = status
-        self._reason = reason
-        self._encoding = encoding
-        self._contentSize = contentSize
-        self._headers = headers
-        self._body = data
-        self._options = options
-
-    @classmethod
-    def fromJSON(cls, data, metaName):
-        if not data:
-            return None
-
-        try:
-            _status = getRequired(data, 'status')
-            _reason = getOptional(data, 'reason')
-            _encoding = getOptional(data, 'encoding')
-            _options = getOptional(data, 'options')
-
-            content = getOptional(data, 'content')
-            _encoding = getOptional(content, 'encoding')  # NOTE NOT USED
-            _size = getOptional(content, 'size')
-            _data = getOptional(content, 'data')
-
-            headers = getOptional(data, 'headers')
-            header_encoding = getOptional(headers, 'encoding')  # NOTE NOT USED
-            # NOTE can and will break sometime because headers is optional
-            _headers = generateHeadersFromTxnFields(
-                getOptional(headers, 'fields'))
-            # print(_headers)
-
-            # if _size and ('Content-Length' not in _headers or 'content-length' not in _headers):
-            # _headers.update({'Content-Length': _size})  # NOTE temporary solution
-        except Exception as e:
-            print("Error in parsing {0} response. Error {1}".format(
-                metaName, e))
-            raise e
-
-        return cls(_status, _reason, _encoding, _size, _data, _headers, _options)
 
     # mostly adapted from Apache Traffic Server's tests' simple request lines
     @classmethod

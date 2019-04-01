@@ -17,5 +17,6 @@ specific language governing permissions and limitations
 under the License.
 '''
 
-from .parse import parse, ParseError
-from .attribute import Attribute
+from .dom import Dom, DOM_1_0_1
+from .session import Session
+from .transaction import Transaction

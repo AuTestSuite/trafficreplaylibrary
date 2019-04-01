@@ -17,32 +17,65 @@ specific language governing permissions and limitations
 under the License.
 '''
 
-from .svUtils import *
+from trlib.parser.attribute import Attribute
+from typing import List
+from deprecated import deprecated
+
+#from .svUtils import *
 from .transaction import Transaction
 
 
 class Session(object):
-    REQUIRED_FIELDS = ['transactions']
+    attributes = [
+        Attribute("transactions", List[Transaction], required=True),
+        # should be validated as "ipv4 or ipv6"
+        Attribute("protocol", List[str],),
+        Attribute("connection-time", int, argument_name="timestamp")
+    ]
 
     ''' Session encapsulates a single user session '''
 
+    def __init__(self, timestamp: str, protocol: str, transactions: List[Transaction]):
+
+        self._timestamp: str = timestamp
+        self._protocol: str = protocol
+        self._transaction_list: List[Transaction] = transactions
+
+    @property
+    def Transactions(self) -> List[Transaction]:
+        return self._transaction_list
+
+    @deprecated(reason="Use Transaction property instead")
     def getTransactionList(self):
         ''' Returns a list of transaction objects '''
         return self._transaction_list
 
+    @deprecated(reason="Use 'obj.Transaction[0]' instead")
     def getFirstTransaction(self):
         return self._transaction_list[0]
 
+    @deprecated(reason="Iter over Transaction property instead")
     def getTransactionIter(self):
         return iter(self._transaction_list)
 
+    @deprecated(reason="Don't use")
     def getFilename(self):
-        return self._filename
+        return ""
 
+    @property
+    def timestamp(self):
+        return self._timestamp
+
+    @deprecated(reason="Use timestamp property instead")
     def getTimestamp(self):
         return self._timestamp
 
-    def getProtocol(self):
+    @property
+    def protocol(self):
+        return self._protocol
+
+    @deprecated(reason="Use protocol property instead")
+    def getProtocol(self) -> str:
         return self._protocol
 
     def validate(self):
@@ -57,7 +90,7 @@ class Session(object):
             verbose_print(
                 "Session from {0} does not have an associated transaction list.".format(self._filename))
 
-        for txn in self.getTransactionIter():
+        for txn in self._transaction_list():
             retval = retval and txn.validate()
 
         return retval
@@ -71,42 +104,3 @@ class Session(object):
         retstr += '>\n'
 
         return retstr
-
-    @classmethod
-    def fromJSON(cls, fname, data):
-        _protocol = getOptional(data, 'protocol')  # NOTE NOT USED
-        _connection_time = getOptional(
-            data, 'connection-time')  # NOTE NOT USED
-        _txns = []
-
-        for txn in getRequired(data, 'transactions'):
-            try:
-                _txns.append(Transaction.fromJSON(txn))
-            except Exception as e:
-                print("Skipping faulty txn in session with connect-time {0} in file {1}. Error: {2}".format(
-                    _connection_time, fname, e))
-                continue
-
-        return cls(fname, _connection_time, _protocol, _txns)
-
-    def toJSON(self):
-        retJson = dict()
-
-        if self._protocol:
-            retJson['protocol'] = self._protocol
-
-        if self._timestamp:
-            retJson['connection-time'] = self._timestamp
-
-        retJson['transactions'] = list()
-
-        for txn in self._transaction_list:
-            retJson['transactions'].append(txn.toJSON())
-
-        return retJson
-
-    def __init__(self, filename, timestamp, protocol, transaction_list):
-        self._filename = filename
-        self._timestamp = timestamp
-        self._protocol = protocol
-        self._transaction_list = transaction_list

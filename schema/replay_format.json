@@ -1,5 +1,4 @@
 {
-  "$schema": "https://bitbucket.org/autestsuite/trafficreplaylibrary/src/trlib/replay_format.json",
   "title": "Traffic Server Replay File",
   "description": "Data for Traffic Server sessions and transactions.",
   "type": "object",
@@ -21,74 +20,92 @@
       "items": {
         "title": "Session",
         "description": "Session data.",
-        "type": "object",
-        "required": [ "transactions" ],
-        "properties": {
-          "protocol": {
-            "description": "The network protocol stack of the inbound connection.",
-            "type": "array",
-            "items": {
-              "description": "Protocol tag",
-              "type": "string"
-            }
-          },
-          "connect-time": {
-            "description": "User Agent connection time.",
-            "type": "number"
-          },
-          "transactions": {
-            "description": "List of transactions",
-            "type": "array",
-            "items": {
-              "description": "Transaction",
-              "type": "object",
-              "required": [ "client-request", "server-response" ],
-              "properties": {
-                "uuid": {
-                  "description": "UUID to identify this specific transaction.",
-                  "type": "string"
-                },
-                "start-time": {
-                  "description": "Start time in epoch format",
-                  "type": "number"
-                },
-                "client-request": {
-                  "description": "Request sent by the inbound (downstream) connection.",
-                  "$ref": "#/definitions/request"
-                },
-                "proxy-request": {
-                  "description": "Request sent by the proxy.",
-                  "$ref": "#/definitions/request"
-                },
-                "server-response": {
-                  "description": "Response from the outbound (upstream) connection.",
-                  "$ref": "#/definitions/response"
-                },
-                "proxy-response": {
-                  "description": "Response sent by the proxy.",
-                  "$ref": "#/definitions/response"
-                }
-              }
-            }
-          }
-        }
+        "$ref": "#/definitions/session"
       }
     }
   },
-
   "definitions": {
+    "session": {
+      "description": "Session data.",
+      "type": "object",
+      "required": [
+        "transactions"
+      ],
+      "properties": {
+        "protocol": {
+          "description": "The network protocol stack of the inbound connection.",
+          "type": "array",
+          "items": {
+            "description": "Protocol tag",
+            "type": "string"
+          }
+        },
+        "connection-time": {
+          "description": "User Agent connection time.",
+          "type": "number"
+        },
+        "transactions": {
+          "description": "List of transactions",
+          "type": "array",
+          "items": {
+            "description": "Transaction of the Session",
+            "$ref": "#/definitions/transaction"
+          }
+        }
+      }
+    },
+    "transaction": {
+      "description": "transaction data",
+      "type": "object",
+      "required": [
+        "client-request",
+        "server-response"
+      ],
+      "properties": {
+        "uuid": {
+          "description": "UUID to identify this specific transaction.",
+          "type": "string"
+        },
+        "start-time": {
+          "description": "Start time in epoch format",
+          "type": "number"
+        },
+        "client-request": {
+          "description": "Request sent by the inbound (downstream) connection.",
+          "$ref": "#/definitions/request"
+        },
+        "proxy-request": {
+          "description": "Request sent by the proxy.",
+          "$ref": "#/definitions/request"
+        },
+        "server-response": {
+          "description": "Response from the outbound (upstream) connection.",
+          "$ref": "#/definitions/response"
+        },
+        "proxy-response": {
+          "description": "Response sent by the proxy.",
+          "$ref": "#/definitions/response"
+        }
+      }
+    },
     "encoding": {
       "description": "Text encoding format.",
       "type": "string",
-      "enum": ["plain", "uri", "esc_json"]
+      "enum": [
+        "plain",
+        "uri",
+        "esc_json"
+      ]
     },
     "content": {
       "description": "HTTP payload.",
-      "anyOf" : [
+      "anyOf": [
         {
           "type": "object",
           "description": "Explicit payload.",
-          "required": ["data"],
+          "required": [
+            "data"
+          ],
           "properties": {
             "encoding": {
               "description": "Content data encoding for JSON compatibility.",
@@ -107,7 +124,9 @@
         {
           "type": "object",
           "description": "Synthesized payload (only size specified)",
-          "required": ["size"],
+          "required": [
+            "size"
+          ],
           "properties": {
             "encoding": {
               "description": "Content data encoding for JSON compatibility.",
@@ -124,7 +143,9 @@
     "header-fields": {
       "description": "HTTP header fields.",
       "type": "object",
-      "required": ["fields"],
+      "required": [
+        "fields"
+      ],
       "properties": {
         "encoding": {
           "description": "Encoding applied to field values.",
@@ -133,19 +154,21 @@
         "fields": {
           "description": "The field name and value pairs.",
           "type": "array",
-          "minItems": 2,
-          "maxItems": 3,
           "items": {
             "description": "HTTP field.",
             "type": "array",
+            "minItems": 2,
+            "maxItems": 3,
             "items": [
               {
                 "description": "Name of the field.",
                 "type": "string"
-              }, {
+              },
+              {
                 "description": "Value of the field.",
                 "type": "string"
-              }, {
+              },
+              {
                 "description": "Flag for the field. 'e' for existence, '==/!=' for comparison testing",
                 "type": "string"
               }
@@ -158,12 +181,19 @@
       "title": "request",
       "description": "HTTP request.",
       "type": "object",
-      "required": [ "method", "url" ],
+      "required": [
+        "method",
+        "url"
+      ],
       "properties": {
         "version": {
           "description": "HTTP version",
           "type": "string",
-          "enum": ["0.9", "1.0", "1.1"]
+          "enum": [
+            "0.9",
+            "1.0",
+            "1.1"
+          ]
         },
         "scheme": {
           "description": "HTTP scheme (request).",
@@ -195,7 +225,9 @@
       "title": "response",
       "description": "HTTP response.",
       "type": "object",
-      "required": ["status"],
+      "required": [
+        "status"
+      ],
       "properties": {
         "status": {
           "description": "Status code.",

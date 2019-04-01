@@ -17,5 +17,26 @@ specific language governing permissions and limitations
 under the License.
 '''
 
-from .parse import parse, ParseError
-from .attribute import Attribute
+import json
+from typing import List
+from .parser import parse, ParseError
+from .dom import Dom, Session
+
+#def load_file(file_name:str, validate:bool=False) -> List[Session]:
+
+    # load the data file as json
+    #with open(file_name) as infile:
+        #data = json.load(infile)
+
+    # validate the file with schema
+    #if validate:
+        #jsonschema.validate(instance=data,schema=schema)
+
+    # transform the data in to DOM (data object model)
+
+
+def loads(datastr:str, dom = Dom) -> Dom:
+    return load_json(json.loads(datastr),dom)
+
+def load_json(json_data:dict, dom = Dom) -> Dom:
+    return parse(json_data,dom)

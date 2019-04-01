@@ -38,6 +38,10 @@ setup(name="trlib",
 
       package_dir={'': 'src'},
       packages=find_packages('src'),
+      install_requires=[
+          "Deprecated",
+          "jsonschema"
+      ],
       # see classifiers
       # http://pypi.python.org/pypi?%3Aaction=list_classifiers
       classifiers=[

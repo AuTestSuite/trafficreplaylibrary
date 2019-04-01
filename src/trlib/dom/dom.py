@@ -17,5 +17,28 @@ specific language governing permissions and limitations
 under the License.
 '''
 
-from .parse import parse, ParseError
-from .attribute import Attribute
+from trlib.parser import Attribute, parse
+
+from typing import Any,List
+from .session import Session
+
+class DOM_1_0_1:
+    ''' this class only exists to help with translating a json structure to object form'''
+    attributes=[
+        Attribute("meta",dict),
+        Attribute("sessions",List[Session],required=True)
+    ]
+
+    def __init__(self, sessions:List[Session], meta):
+        self._sessions = sessions
+        self._meta = meta
+
+    @property
+    def sessions(self) -> List[Session]:
+        return self._sessions
+
+    @property
+    def meta(self) -> dict:
+        return self._meta
+
+Dom = DOM_1_0_1

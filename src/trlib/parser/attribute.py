@@ -17,5 +17,41 @@ specific language governing permissions and limitations
 under the License.
 '''
 
-from .parse import parse, ParseError
-from .attribute import Attribute
+
+from typing import Any, Optional
+
+
+class Attribute(object):
+    def __init__(self, name: str, type_info, default: Any = None, required: bool = False, argument_name:Optional[str]=None):
+        self._name = name
+        self._type = type_info
+        self._default = default
+        self._required = required
+        self._arg_name = argument_name
+
+    @property
+    def typeinfo(self):
+        return self._type
+
+    @property
+    def name(self):
+        return self._name
+
+    @property
+    def default(self):
+        return self._default
+
+    @property
+    def required(self):
+        return self._required
+
+    @property
+    def argument_name(self) -> str:
+        return self._arg_name if self._arg_name else self.name
+
+
+
+
+
+
+
