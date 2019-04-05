@@ -25,14 +25,14 @@ class Field:
     attribute_list = [
         Attribute("key",str,required=True),
         Attribute("value",str,required=True),
-        Attribute("comp",str, default = "=="), # validate e->exists, != not equal to, == equal to [defaults] 
+        Attribute("comp",str, default = "=="), # validate e->exists, != not equal to, == equal to [defaults]
     ]
 
     def __init__(self,key,value,comp):
         self._key = key
         self._value = value
         self._comp = comp
-        
+
     def __getitem__(self,indx):
         if indx == 0:
             return self._key
@@ -43,12 +43,11 @@ class Field:
         raise IndexError("index out of range")
 
     @property
-    def key(self) -> Optional[str]:
+    def key(self) -> str:
         return self._key
     @property
-    def value(self) -> Optional[str]:
+    def value(self) -> str:
         return self._value
     @property
-    def comp(self) -> Optional[str]:
+    def comp(self) -> str:
         return self._comp
-    

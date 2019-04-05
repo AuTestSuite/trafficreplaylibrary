@@ -20,3 +20,5 @@ under the License.
 from .dom import Dom, DOM_1_0_1
 from .session import Session
 from .transaction import Transaction
+from .request import Request
+from .response import Response

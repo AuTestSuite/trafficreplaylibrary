@@ -31,7 +31,8 @@ class Content:
     content_buffer: str = "ab"*(64*1024)  # starting buffer
 
     def __init__(self, content: Optional[str] = None, size: Optional[int] = None, encoding: Optional[str] = None) -> None:
-        self._content: Optional[str] = content
+        content=None
+        #self._content: Optional[str] = content
         self._length: Optional[int] = None
         content_length = size
         if content and content_length and (len(content) != content_length):

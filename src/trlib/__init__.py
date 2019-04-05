@@ -24,4 +24,6 @@ __version__ = "1.1.0"
 
 
 from .loader import loads, load_json
+from .parser import ParseError
+from .dom import Dom, DOM_1_0_1, Session, Transaction, Request, Response
 

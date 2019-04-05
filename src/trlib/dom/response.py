@@ -75,21 +75,27 @@ class Response(object):
         return self._options
     ###
 
+    @property
     def headers(self) -> Header:
         return self._header
 
+    @property
     def status(self) -> int:
         return self._status
 
+    @property
     def reason(self) -> Optional[str]:
         return self._reason
 
+    @property
     def encoding(self) -> Optional[str]:
         return self._encoding
 
+    @property
     def body(self) -> Content:
         return self._content
 
+    @property
     def options(self):
         return self._options
 

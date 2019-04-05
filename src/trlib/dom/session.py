@@ -42,19 +42,19 @@ class Session(object):
         self._transaction_list: List[Transaction] = transactions
 
     @property
-    def Transactions(self) -> List[Transaction]:
+    def transactions(self) -> List[Transaction]:
         return self._transaction_list
 
-    @deprecated(reason="Use Transaction property instead")
+    @deprecated(reason="Use transactions property instead")
     def getTransactionList(self):
         ''' Returns a list of transaction objects '''
         return self._transaction_list
 
-    @deprecated(reason="Use 'obj.Transaction[0]' instead")
+    @deprecated(reason="Use 'obj.transactions[0]' instead")
     def getFirstTransaction(self):
         return self._transaction_list[0]
 
-    @deprecated(reason="Iter over Transaction property instead")
+    @deprecated(reason="Iter over transactions property instead")
     def getTransactionIter(self):
         return iter(self._transaction_list)
 

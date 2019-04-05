@@ -42,8 +42,8 @@ class Transaction(object):
     def __init__(self, c_request: Request, s_response: Response, p_request: Optional[Request] = None, p_response: Optional[Response] = None, uuid: Optional[str] = None, timestamp: Optional[str] = None):
         self._c_request: Request = c_request
         self._s_response: Response = s_response
-        self._p_request: Request = p_request if not None else c_request
-        self._p_response: Response = p_response if not None else s_response
+        self._p_request: Request = p_request if p_request else c_request
+        self._p_response: Response = p_response if p_response else s_response
         self._uuid: Optional[str] = uuid
         self._timestamp: Optional[str] = timestamp
 

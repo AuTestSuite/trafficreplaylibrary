@@ -16,7 +16,7 @@ KIND, either express or implied.  See the License for the
 specific language governing permissions and limitations
 under the License.
 '''
-from typing import Dict, List, Optional, Tuple, Union
+from typing import Dict, List, Optional, Tuple, Union, cast
 
 from trlib.parser.attribute import Attribute
 
@@ -33,17 +33,24 @@ class Header:
     def __init__(self, fields: List[Field], encoding: Optional[str] = None):
         self._encoding: Optional[str] = None
         self._fields: List[Field] = fields
-
+        self._is_chunked: bool = False
         tmp = {}
         for field in self._fields:
-            key = field.key  # Header key
+            key = cast(str, field.key)  # Header key
             val = field.value  # Header value
             # optional header test logic (e->exists, != not equal to, == equal to [defaults] )
             com = field.comp
             tmp[key] = (val, com)
+            if key.lower() == 'transfer-encoding' and val.lower() == 'chunked':
+                self._is_chunked = True
 
         self._fields_dict: Dict[str, Tuple[str, str]] = tmp
         self._headers_dict: Dict[str, str] = {v[0]: v[1] for v in self._fields}
+        self._tuples = [(v[0], v[1]) for v in self._fields]
+
+    @property
+    def isChunkedEncoded(self) -> bool:
+        return self._is_chunked
 
     @property
     def encoding(self) -> Optional[str]:
