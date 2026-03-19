@@ -1,0 +1,54 @@
+[build-system]
+requires = ["setuptools>=68", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "trlib"
+dynamic = ["version"]
+description = "Traffic Replay Library"
+readme = "README.md"
+license = "Apache-2.0"
+authors = [
+  { name = "Jason Kenny", email = "dragon512@live.com"},
+  { name = "Jesse Zhang", email = "jesse.zhang8759@gmail.com" }
+]
+requires-python = ">=3.10"
+dependencies = [
+  "Deprecated",
+  "jsonschema"
+]
+classifiers = [
+  "Environment :: Console",
+  "Intended Audience :: Developers",
+  "Operating System :: OS Independent",
+  "Programming Language :: Python :: 3",
+  "Programming Language :: Python :: 3.10",
+  "Programming Language :: Python :: 3.11",
+  "Programming Language :: Python :: 3.12"
+]
+
+[project.urls]
+Homepage = "https://github.com/AuTestSuite/trafficreplaylibrary"
+
+[project.optional-dependencies]
+dev = [
+  "autopep8",
+  "mypy",
+  "pylint",
+  "sphinx"
+]
+
+[tool.setuptools]
+package-dir = {"" = "src"}
+
+[tool.setuptools.packages.find]
+where = ["src"]
+
+[tool.setuptools.dynamic]
+version = {attr = "trlib.__version__"}
+
+[tool.autopep8]
+max_line_length = 132
+
+[tool.pylint.format]
+max-line-length = 132

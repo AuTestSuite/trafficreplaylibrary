@@ -1,8 +1,11 @@
 __pycache__/
+.venv/
 
 src/trlib\.egg-info/
+src/*.egg-info/
 
 *.pyc
+*.pyo
 
 *.whl
 
@@ -11,3 +14,4 @@ build/*
 dist/*
 **/\.mypy_cache/*
 docs/_build/*
+uv.lock
